@@ -1,0 +1,47 @@
+body {
+  font-family: monospace, sans-serif;
+  background-color: #dbdbdb;
+  width: 50%;
+  margin: auto;
+}
+
+h1 {
+  padding: 50px;
+  text-align: center;
+}
+
+#app {
+  display: flex;
+}
+
+#calculator {
+  display: flex;
+  flex-direction: column;
+  margin-right: 30px;
+}
+
+#input { 
+  height: 100px;
+  margin: 0 5px 10px 5px;
+  background-color: white;
+}
+
+.row {
+  display: flex;
+}
+
+.button {
+  height: 100px;
+  width: 100px;
+  margin: 5px;
+  text-align: center;
+  line-height: 100px;
+  background-color: #2abeb2;
+  font-size: 1.75em;
+  font-weight: bold;
+  color: white;
+}
+.button:hover {
+  cursor: pointer;
+  background-color: #019387;
+}
