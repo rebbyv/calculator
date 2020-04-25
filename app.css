@@ -24,13 +24,18 @@ h1 {
   height: 100px;
   margin: 0 5px 10px 5px;
   background-color: white;
+  text-align: right;
+  padding-right: 20px;
+  font-size: 1.75em;
+  font-weight: bold;
+  line-height: 100px;
 }
 
 .row {
   display: flex;
 }
 
-.button {
+span {
   height: 100px;
   width: 100px;
   margin: 5px;
@@ -41,7 +46,7 @@ h1 {
   font-weight: bold;
   color: white;
 }
-.button:hover {
+span:hover {
   cursor: pointer;
   background-color: #019387;
 }
