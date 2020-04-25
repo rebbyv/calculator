@@ -2,40 +2,75 @@
 // listens to the controller to take in state change
 // talks to the view to update the view
 var Model = {
-  firstNum: false,
+  firstNum: true,
   numOne: '',
-  secondNum: false,
   numTwo: '',
   operator: false,
+  lastChange: [],
+  // lastChange = numOne, numTwo, decimal, negate, operator, percent
 
   setNum: (btn) => {
-    if (!Model.firstNum) {
+    if (Model.firstNum) {
       Model.numOne += btn;
+      Model.lastChange.push('numOne');
     } else {
       if (Model.operator) {
         Model.numTwo += btn;
+        Model.lastChange.push('numTwo');
       }
     }
     View.updateView();
   },
 
   setOperator: (btn) => {
-    Model.operator = btn;
-    Model.firstNum = true;
+    if (Model.numOne !== '') {
+      Model.operator = btn;
+    }
+    Model.lastChange.push('operator')
+    Model.firstNum = false;
     View.updateView();
   },
 
   clear: () => {
-    Model.firstNum = false;
+    Model.firstNum = true;
     Model.numOne = '';
-    Model.secondNum = false;
     Model.numTwo = '';
     Model.operator = false;
     View.updateView();
   },
 
   undo: () => {
-    console.log('hello')
+    var change = Model.lastChange.pop()
+    if (change === 'numOne' || change === 'numTwo' || change === 'decimal') {
+      if (Model.firstNum) {
+        Model.numOne = Model.numOne.slice(0, Model.numOne.length - 1)
+      } else {
+        Model.numTwo = Model.numTwo.slice(0, Model.numTwo.length - 1)
+      }
+    } else if (change === 'operator') {
+      Model.operator = false;
+    } else if (change === 'negate') {
+      if (Model.firstNum) {
+        if (Model.numOne[0] === '-') {
+          Model.numOne = Model.numOne.slice(1);
+        } else {
+          Model.numOne = '-' + Model.numOne;
+        }
+      } else {
+        if (Model.numTwo[0] === '-') {
+          Model.numTwo = Model.numTwo.slice(1);
+        } else {
+          Model.numTwo = '-' + Model.numTwo;
+        }
+      }
+    } else if (change === 'percent') {
+      if (Model.firstNum) {
+        Model.numOne = Model.numOne * 100;
+      } else {
+        Model.numTwo = Model.numTwo * 100;
+      }
+    } 
+    View.updateView();
   },
 
   negate: () => {
@@ -52,24 +87,31 @@ var Model = {
         Model.numTwo = '-' + Model.numTwo;
       }
     }
+    Model.lastChange.push('negate')
     View.updateView();
   },
 
   makeFloat: () => {
-    if (!Model.firstNum) {
-      Model.numOne = Model.numOne + '.';
+    if (Model.firstNum) {
+      if (!Model.numOne.includes('.')) {
+        Model.numOne = Model.numOne + '.';
+      }
     } else {
-      Model.numTwo = Model.numTwo + '.';
+      if (!Model.numTwo.includes('.')){
+        Model.numTwo = Model.numTwo + '.';
+      }
     }
+    Model.lastChange.push('decimal')
     View.updateView();
   },
 
   makePercent: () => {
-    if (!Model.firstNum) {
-      Model.numOne = parseInt(Model.numOne) / 100;
+    if (Model.firstNum) {
+      Model.numOne = (parseInt(Model.numOne) / 100) + '';
     } else {
-      Model.numTwo = parseInt(Model.numTwo) / 100;
+      Model.numTwo = (parseInt(Model.numTwo) / 100) + '';
     }
+    Model.lastChange.push('percent')
     View.updateView();
   },
 
@@ -83,11 +125,14 @@ var Model = {
       result = parseFloat(Model.numOne) + parseFloat(Model.numTwo);
     } else if (Model.operator === '-') {
       result = parseFloat(Model.numOne) - parseFloat(Model.numTwo);
+    } else {
+      result = Model.numOne;
     }
     View.updateHistory(result, Model.numOne, Model.numTwo, Model.operator)
     Model.operator = false;
     Model.numOne = result + '';
     Model.numTwo = '';
+    Model.firstNum = true;
     View.updateView();
   }
 }
@@ -105,7 +150,7 @@ var View = {
 
   updateHistory: (result, numOne, numTwo, operator) => {
     var hist = document.getElementById('history');
-    hist.innerHTML = `<p>${numOne} ${operator} ${numTwo} = ${result}</p>` + hist.innerHTML;
+    hist.innerHTML = `<p>${numOne} ${operator ? operator: ''} ${numTwo} = ${result}</p>` + hist.innerHTML;
   }
 }
 
