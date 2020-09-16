@@ -7,10 +7,13 @@ var Model = {
   numTwo: '',
   operator: false,
   lastChange: [],
-  // lastChange = numOne, numTwo, decimal, negate, operator, percent
+  // lastChange = '=', numOne, numTwo, decimal, negate, operator, or percent
 
   setNum: (btn) => {
-    if (Model.firstNum) {
+    if (Model.lastChange[0] === '=') {
+      Model.numOne = btn + '';
+      Model.lastChange[0] = 'numOne';
+    } else if (Model.firstNum) {
       Model.numOne += btn;
       Model.lastChange.push('numOne');
     } else {
@@ -25,6 +28,9 @@ var Model = {
   setOperator: (btn) => {
     if (Model.numOne !== '') {
       Model.operator = btn;
+    }
+    if (Model.lastChange[0] === '=') {
+      Model.lastChange.shift()
     }
     Model.lastChange.push('operator')
     Model.firstNum = false;
@@ -69,7 +75,9 @@ var Model = {
       } else {
         Model.numTwo = Model.numTwo * 100;
       }
-    } 
+    } else if (change = '=') {
+      Model.clear();
+    }
     View.updateView();
   },
 
@@ -133,6 +141,7 @@ var Model = {
     Model.numOne = result + '';
     Model.numTwo = '';
     Model.firstNum = true;
+    Model.lastChange = ['='];
     View.updateView();
   }
 }
@@ -145,6 +154,7 @@ var Model = {
 // talks to the DOM
 var View = {
   updateView: () => {
+    console.log(Model.lastChange)
     document.getElementById('input').innerHTML = Model.numOne + ' ' + (Model.operator ? Model.operator: '') + ' ' + Model.numTwo;
   },
 
